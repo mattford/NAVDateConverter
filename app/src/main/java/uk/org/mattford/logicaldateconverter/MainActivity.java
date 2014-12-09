@@ -2,13 +2,16 @@ package uk.org.mattford.logicaldateconverter;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +19,8 @@ import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private final String logTag = "NAVDateConverter/MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onConvertClick(View v) {
+        Log.v(logTag, "Called onConvertClick");
         DatePicker valueToConvertView = (DatePicker)findViewById(R.id.datePicker);
         int day = valueToConvertView.getDayOfMonth();
         int month = valueToConvertView.getMonth();
@@ -60,20 +66,18 @@ public class MainActivity extends ActionBarActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        long diffDays = dateToConvert.getTime() - yearOneDate.getTime();
+        int diffMSeconds = (int) (dateToConvert.getTime() - yearOneDate.getTime());
+        Log.v(logTag, Long.toString(dateToConvert.getTime()) + " - " + Long.toString(yearOneDate.getTime()));
+        Log.v(logTag, Integer.toString(diffMSeconds));
+        int diffDays = diffMSeconds / (1000 * 60 * 60 * 60 * 24);
         diffDays = (diffDays * 2) + 737;
+        Log.v(logTag, Integer.toString(diffDays));
 
-        String converted = "";
-
-        ByteBuffer buffer = ByteBuffer.allocate(Long.SIZE);
-        buffer.putLong(diffDays);
-        byte[] bytes = buffer.array();
-        for(byte bt : bytes) {
-            converted = converted + Byte.toString(bt);
-        }
+        String converted = Long.toHexString(diffDays);
 
         TextView tv = (TextView)findViewById(R.id.convertedValue);
         tv.setText("0x"+converted);
+        Log.v(logTag,converted);
 
     }
 }
