@@ -1,26 +1,50 @@
 package uk.org.mattford.logicaldateconverter;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    private final String logTag = "NAVDateConverter/MainActivity";
+    private final int MILLISECONDS_IN_A_DAY = 86400000;
+
+    public static class DatePickerFragment extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        MainActivity parentActivity = null;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current date as the default date in the picker
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            parentActivity = (MainActivity) getActivity();
+
+            // Create a new instance of DatePickerDialog and return it
+            return new DatePickerDialog(getActivity(), this, year, month, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            // Do something with the date chosen by the user
+            parentActivity.onDateSelected(Integer.toString(year)+"-"+Integer.toString(month)+"-"+Integer.toString(day));
+            dismiss();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +52,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
     }
 
-
+    /*
+    No menu for this app.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -50,34 +75,33 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    */
 
-    public void onConvertClick(View v) {
-        Log.v(logTag, "Called onConvertClick");
-        DatePicker valueToConvertView = (DatePicker)findViewById(R.id.datePicker);
-        int day = valueToConvertView.getDayOfMonth();
-        int month = valueToConvertView.getMonth();
-        int year = valueToConvertView.getYear();
+    public void onSelectDateClick(View v) {
+        DialogFragment datepicker = new DatePickerFragment();
+        datepicker.show(getFragmentManager(), "datePicker");
+
+    }
+
+    public void onDateSelected(String selectedDate) {
         Date dateToConvert = null;
         Date yearOneDate = null;
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            dateToConvert = format.parse(Integer.toString(day) + "/" + Integer.toString(month) + "/" + Integer.toString(year));
-            yearOneDate = format.parse("03/01/0001");
+            dateToConvert = format.parse(selectedDate);
+            yearOneDate = format.parse("0001-01-03");
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        int diffMSeconds = (int) (dateToConvert.getTime() - yearOneDate.getTime());
-        Log.v(logTag, Long.toString(dateToConvert.getTime()) + " - " + Long.toString(yearOneDate.getTime()));
-        Log.v(logTag, Integer.toString(diffMSeconds));
-        int diffDays = diffMSeconds / (1000 * 60 * 60 * 60 * 24);
+        long diffMSeconds = dateToConvert.getTime() - yearOneDate.getTime();
+        long diffDays = diffMSeconds / MILLISECONDS_IN_A_DAY;
         diffDays = (diffDays * 2) + 737;
-        Log.v(logTag, Integer.toString(diffDays));
 
-        String converted = Long.toHexString(diffDays);
-
+        diffDays = Long.reverseBytes(diffDays);
+        String converted = "0x"+Long.toHexString(diffDays);
+        converted = converted.replaceAll("0*$", "");
         TextView tv = (TextView)findViewById(R.id.convertedValue);
-        tv.setText("0x"+converted);
-        Log.v(logTag,converted);
+        tv.setText(getString(R.string.output_value_text,converted));
 
     }
 }

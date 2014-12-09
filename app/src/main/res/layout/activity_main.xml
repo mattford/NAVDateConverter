@@ -8,34 +8,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:weightSum="1">
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/select_date_button"
+        android:onClick="onSelectDateClick"
+        android:id="@+id/convertButton"
+        android:layout_weight="0.05" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome to Converter"
-        android:id="@+id/welcomeText"
-        android:layout_weight="0.05" />
-
-    <DatePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/datePicker"
-        android:layout_weight="0.05" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Convert"
-        android:onClick="onConvertClick"
-        android:id="@+id/convertButton"
-        android:layout_weight="0.05" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/convertedValue"
         android:layout_weight="0.05"
-        android:text="Converted value will appear here" />
+        android:text="@string/output_value_initial" />
 </LinearLayout>
 
 
