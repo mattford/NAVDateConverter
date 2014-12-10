@@ -3,6 +3,5 @@
 
     <string name="app_name">NAV Date Converter</string>
     <string name="select_date_button">Select Date</string>
-    <string name="output_value_text">Your date in the perfectly logical NAV format is: %s</string>
-    <string name="output_value_initial">The converted date will appear here.</string>
+    <string name="output_value_initial"></string>
 </resources>

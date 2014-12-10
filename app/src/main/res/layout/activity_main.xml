@@ -21,7 +21,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/convertedValue"
         android:layout_weight="0.05"
-        android:text="@string/output_value_initial" />
+        android:text="@string/output_value_initial"
+        android:textColor="#ffff0006"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:textSize="@dimen/abc_text_size_display_1_material" />
 </LinearLayout>
 
 
