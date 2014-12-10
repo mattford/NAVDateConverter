@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -14,11 +15,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends ActionBarActivity {
 
     private final int MILLISECONDS_IN_A_DAY = 86400000;
+    private final String logTag = "NAVDateConverter/MainActivity";
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
@@ -41,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
-            parentActivity.onDateSelected(Integer.toString(year)+"-"+Integer.toString(month)+"-"+Integer.toString(day));
+            parentActivity.onDateSelected(Integer.toString(year)+"-"+Integer.toString(month+1)+"-"+Integer.toString(day));
             dismiss();
         }
     }
@@ -84,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onDateSelected(String selectedDate) {
+        Log.v(logTag, selectedDate);
         Date dateToConvert = null;
         Date yearOneDate = null;
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -94,12 +98,13 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         long diffMSeconds = dateToConvert.getTime() - yearOneDate.getTime();
-        long diffDays = diffMSeconds / MILLISECONDS_IN_A_DAY;
+        long diffDays = TimeUnit.DAYS.convert(diffMSeconds, TimeUnit.MILLISECONDS);
+        Log.v(logTag, Long.toString(diffDays));
         diffDays = (diffDays * 2) + 737;
-
-        diffDays = Long.reverseBytes(diffDays);
+        Log.v(logTag, Long.toString(diffDays));
+        //diffDays = Long.reverseBytes(diffDays);
         String converted = "0x"+Long.toHexString(diffDays);
-        converted = converted.replaceAll("0*$", "");
+        //converted = converted.replaceAll("0*$", "");
         TextView tv = (TextView)findViewById(R.id.convertedValue);
         tv.setText(getString(R.string.output_value_text,converted));
 
